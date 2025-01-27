@@ -4,6 +4,7 @@ import theme from "../theme";
 import { PropsWithChildren } from "react";
 import Header from "./_components/Header";
 import "@/app/_styles/globals.scss";
+import Footer from "./_components/Footer";
 
 export default function RootLayout(props: PropsWithChildren) {
   const { children } = props;
@@ -14,6 +15,7 @@ export default function RootLayout(props: PropsWithChildren) {
         <body>
           <Header />
           <AppRouterCacheProvider>{children}</AppRouterCacheProvider>
+          <Footer />
         </body>
       </ThemeProvider>
     </html>

@@ -1,0 +1,23 @@
+.footer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #636363;
+    color: white;
+}
+
+.followMe {
+    margin: 40px;
+    display: flex;
+    gap: 8px;
+    flex-direction: column;
+}
+
+.icons {
+    display: flex;
+    gap: 8px;
+}
+
+.attribution {
+    margin: 0 0 40px 40px;
+}
