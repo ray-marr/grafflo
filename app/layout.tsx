@@ -14,7 +14,9 @@ export default function RootLayout(props: PropsWithChildren) {
       <ThemeProvider theme={theme}>
         <body>
           <Header />
-          <AppRouterCacheProvider>{children}</AppRouterCacheProvider>
+          <AppRouterCacheProvider>
+            <main>{children}</main>
+          </AppRouterCacheProvider>
           <Footer />
         </body>
       </ThemeProvider>

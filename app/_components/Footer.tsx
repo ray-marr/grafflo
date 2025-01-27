@@ -2,6 +2,8 @@ import * as React from "react";
 import styles from "@/app/_styles/footer.module.scss";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
+import Divider from "@mui/material/Divider";
+
 import { IconButton, Typography } from "@mui/material";
 
 function Footer(): React.JSX.Element {
@@ -27,6 +29,7 @@ function Footer(): React.JSX.Element {
           </IconButton>
         </div>
       </div>
+      <Divider sx={{ margin: "0 40px", backgroundColor: "#ababab" }} />
       <div className={styles.attribution}>
         <Typography>© 2025 Ray Marr. Built with ☕ in London.</Typography>
       </div>

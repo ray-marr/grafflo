@@ -1,33 +1,43 @@
-  @font-face {
-    font-family: 'EuclidFlex';
-    src: url('/fonts/EuclidFlexRegular.ttf') format('ttf');
-    font-weight: normal;
-    font-style: normal;
-  }
+@font-face {
+  font-family: "EuclidFlex";
+  src: url("/fonts/EuclidFlexRegular.ttf") format("ttf");
+  font-weight: normal;
+  font-style: normal;
+}
 
-  @font-face {
-    font-family: 'EuclidFlex';
-    src: url('/fonts/EuclidFlexItalic.ttf') format('ttf');
-    font-weight: normal;
-    font-style: italic;
-  }
+@font-face {
+  font-family: "EuclidFlex";
+  src: url("/fonts/EuclidFlexItalic.ttf") format("ttf");
+  font-weight: normal;
+  font-style: italic;
+}
 
-  @font-face {
-    font-family: 'EuclidFlex';
-    src: url('/fonts/EuclidFlexBold.ttf') format('ttf');
-    font-weight: bold;
-    font-style: normal;
-  }
+@font-face {
+  font-family: "EuclidFlex";
+  src: url("/fonts/EuclidFlexBold.ttf") format("ttf");
+  font-weight: bold;
+  font-style: normal;
+}
 
-  @font-face {
-    font-family: 'EuclidFlex';
-    src: url('/fonts/EuclidFlexBoldItalic.ttf') format('ttf');
-    font-weight: bold;
-    font-style: italic;
-  }
-  
+@font-face {
+  font-family: "EuclidFlex";
+  src: url("/fonts/EuclidFlexBoldItalic.ttf") format("ttf");
+  font-weight: bold;
+  font-style: italic;
+}
 
 body {
-    font-family: 'EuclidFlex', sans-serif !important;
-    margin: 0;
-  }
+  font-family: "EuclidFlex", sans-serif !important;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  grid-row-start: 2;
+  width: 100%;
+  flex-grow: 1;
+}

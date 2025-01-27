@@ -1,0 +1,33 @@
+import { Box, Button, Grid2, Paper, Typography } from "@mui/material";
+
+type props = {
+  title: string;
+  caption: string;
+  name: string;
+};
+
+export default async function GraphPreview({ title, caption, name }: props) {
+  return (
+    <Box>
+      <Typography sx={{ marginBottom: "8px" }} fontWeight="bold">
+        {title}
+      </Typography>
+      <Paper elevation={3} sx={{ width: "200px", height: "200px" }}>
+        <Grid2 container direction="column" spacing={2}>
+          <Button href={`/graphs/${name}`}>
+            <div
+              style={{
+                backgroundImage: `url("images/${name}.jpg")`,
+                width: "100%",
+                height: "100px",
+              }}
+            />
+          </Button>
+          <Typography variant="caption" sx={{ margin: "0 16px" }}>
+            {caption}
+          </Typography>
+        </Grid2>
+      </Paper>
+    </Box>
+  );
+}
