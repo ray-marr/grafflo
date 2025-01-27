@@ -4,11 +4,6 @@ import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import { IconButton, Typography } from "@mui/material";
 
-const pages = [
-  { name: "HOME", href: "/" },
-  { name: "GRAPHS", href: "/graphs" },
-];
-
 function Footer(): React.JSX.Element {
   return (
     <div className={styles.footer}>
