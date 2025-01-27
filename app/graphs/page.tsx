@@ -15,9 +15,9 @@ export default async function GraphSelection() {
 
       <Grid container spacing={4}>
         <GraphPreview
-          title="Mega graph"
-          caption="This mega graph shows the meganess of time"
-          name="megaGraph"
+          title="Demo graph"
+          caption="This demo graph shows a barchart"
+          name="demo"
         />
         <GraphPreview
           title="Super graph"
