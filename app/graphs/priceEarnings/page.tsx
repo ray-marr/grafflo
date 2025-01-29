@@ -1,14 +1,14 @@
 import { Metadata } from "next";
-import D3DemoGraph from "./D3DemoGraph";
+import PEGraph from "./PEGraph";
 
 export const metadata: Metadata = {
-  title: "Demo graph",
+  title: "Price to earnings",
 };
 
 export default async function DemoGraphPage() {
   return (
     <div>
-      <D3DemoGraph />
+      <PEGraph />
     </div>
   );
 }

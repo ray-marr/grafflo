@@ -5,6 +5,14 @@ import { PropsWithChildren } from "react";
 import Header from "./_components/Header";
 import "@/app/_styles/globals.scss";
 import Footer from "./_components/Footer";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: {
+    default: "Grafflo",
+    template: "%s | Grafflo",
+  },
+};
 
 export default function RootLayout(props: PropsWithChildren) {
   const { children } = props;

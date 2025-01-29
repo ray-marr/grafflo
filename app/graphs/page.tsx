@@ -2,6 +2,11 @@ import styles from "@/app/_styles/graphSelection.module.scss";
 import { Typography } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import GraphPreview from "./GraphPreview";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Graph selection",
+};
 
 export default async function GraphSelection() {
   return (
@@ -20,9 +25,9 @@ export default async function GraphSelection() {
           name="demo"
         />
         <GraphPreview
-          title="Super graph"
-          caption="This super graph shows the relative superbness"
-          name="superGraph"
+          title="Tech P/E Ratio"
+          caption="Price/Earnings ratio of tech companies for the last 10 years"
+          name="priceEarnings"
         />
       </Grid>
     </div>

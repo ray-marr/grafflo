@@ -1,6 +1,11 @@
 import AssistantIcon from "@mui/icons-material/Assistant";
 import styles from "./page.module.scss";
 import { Button, Typography } from "@mui/material";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Home | Grafflo",
+};
 
 export default function Home() {
   return (
