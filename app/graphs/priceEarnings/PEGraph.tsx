@@ -1,11 +1,11 @@
 "use client";
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
-import { DSVRowString } from "d3";
+import { appleData } from "./data";
 
 interface Data {
-  Date: Date;
-  Ratio: number;
+  date: Date;
+  ratio: number;
 }
 
 // TODO:
@@ -16,74 +16,70 @@ interface Data {
 // - add more companies
 
 const PEGraph = () => {
-  const graphRef = useRef(null);
+  const gx = useRef(null);
+  const gy = useRef(null);
 
-  useEffect(() => {
-    const parseTime = d3.timeParse("%Y-%m-%d");
+  // set the dimensions and margins of the graph
+  const margin = { top: 40, right: 30, bottom: 70, left: 60 },
+    width = 500 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
 
-    // clear previous render
-    d3.select(graphRef.current).select("svg").remove();
+  const data: Data[] = appleData.map((data): Data => {
+    return {
+      date: d3.timeParse("%Y-%m-%d")(data.date)!,
+      ratio: +data.ratio,
+    };
+  });
 
-    // set the dimensions and margins of the graph
-    const margin = { top: 30, right: 30, bottom: 70, left: 60 },
-      width = 460 - margin.left - margin.right,
-      height = 400 - margin.top - margin.bottom;
+  const x = d3
+    .scaleTime()
+    .range([margin.left, width - margin.right])
+    .domain(d3.extent(data, (d) => new Date(d.date)) as [Date, Date])
+    .nice();
 
-    // append the svg object to ref element
-    const svg = d3
-      .select(graphRef.current)
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  const y = d3
+    .scaleLinear()
+    .range([height - margin.bottom, margin.top])
+    .domain([0, d3.max(data, (d) => d.ratio) as number])
+    .nice();
 
-    // Parse the Data
-    d3.csv<Data>(
-      "/data/apple.csv",
-      function (data: DSVRowString<string>): Data | null {
-        console.log("did we parse? ", !!data);
-        if (!data) return null;
+  // @ts-expect-error
+  useEffect(() => void d3.select(gx.current).call(d3.axisBottom(x)), [gx, x]);
 
-        return {
-          Date: parseTime(data.date)!,
-          Ratio: +data.ratio,
-        };
-      }
-    ).then((data: Data[]) => {
-      // Set the ranges
-      const x = d3.scaleTime().range([0, width]);
-      const y = d3.scaleLinear().range([height, 0]);
+  // @ts-expect-error
+  useEffect(() => void d3.select(gy.current).call(d3.axisLeft(y)), [gy, y]);
 
-      // Define the line
-      const valueline = d3
-        .line<Data>()
-        .x((d) => x(d.Date))
-        .y((d) => y(d.Ratio));
+  const line = d3
+    .line<Data>()
+    .x((d) => x(d.date))
+    .y((d) => y(d.ratio));
 
-      // Scale the range of the data
-      x.domain(d3.extent(data, (d) => d.Date) as [Date, Date]);
-      y.domain([0, d3.max(data, (d) => d.Ratio) as number]);
-
-      // Add the valueline path
-      svg
-        .append("path")
-        .data([data])
-        .attr("class", "line")
-        .attr("d", valueline);
-
-      // Add the X Axis
-      svg
-        .append("g")
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x));
-
-      // Add the Y Axis
-      svg.append("g").call(d3.axisLeft(y));
-    });
-  }, [graphRef]);
-
-  return <div ref={graphRef}></div>;
+  return (
+    <svg width={width} height={height}>
+      <g ref={gx} transform={`translate(0,${height - margin.bottom})`} />
+      <g ref={gy} transform={`translate(${margin.left},0)`} />
+      <path
+        d={line(data) || undefined}
+        fill="none"
+        stroke="steelblue"
+        strokeWidth="1.5"
+      />
+      <text
+        x={width - margin.right}
+        y={y(data[data.length - 1].ratio)}
+        dy="-5.5em"
+        textAnchor="end"
+        fill="steelblue"
+      >
+        Apple
+      </text>
+      <g fill="white" stroke="currentColor" strokeWidth="1.5">
+        {data.map((d, i) => (
+          <circle key={i} cx={x(d.date)} cy={y(d.ratio)} r="2.5" />
+        ))}
+      </g>
+    </svg>
+  );
 };
 
 export default PEGraph;
