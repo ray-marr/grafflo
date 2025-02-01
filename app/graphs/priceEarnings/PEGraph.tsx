@@ -43,11 +43,17 @@ const PEGraph = () => {
     .domain([0, d3.max(data, (d) => d.ratio) as number])
     .nice();
 
-  // @ts-expect-error
-  useEffect(() => void d3.select(gx.current).call(d3.axisBottom(x)), [gx, x]);
+  useEffect(() => {
+    if (gx.current) {
+      d3.select<SVGGElement, unknown>(gx.current).call(d3.axisBottom(x));
+    }
+  }, [gx, x]);
 
-  // @ts-expect-error
-  useEffect(() => void d3.select(gy.current).call(d3.axisLeft(y)), [gy, y]);
+  useEffect(() => {
+    if (gy.current) {
+      d3.select<SVGGElement, unknown>(gy.current).call(d3.axisLeft(y));
+    }
+  }, [gy, y]);
 
   const line = d3
     .line<Data>()
