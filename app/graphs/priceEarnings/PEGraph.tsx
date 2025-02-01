@@ -1,46 +1,60 @@
 "use client";
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
-import { appleData } from "./data";
+import { appleData, googleData, microsoftData, PEData } from "./data";
+import styles from "./Graph.module.scss";
+import PELine from "./PELine";
 
-interface Data {
+export interface Data {
   date: Date;
   ratio: number;
 }
 
 // TODO:
 // - add labels
-// - improve styling (curved transition + colours)
 // - caption + heading
-// - function for adding data
 // - add more companies
 
 const PEGraph = () => {
   const gx = useRef(null);
   const gy = useRef(null);
 
+  const formatData = (data: PEData): Data[] => {
+    return data.map((d): Data => {
+      return {
+        date: d3.timeParse("%Y-%m-%d")(d.date)!,
+        ratio: +d.ratio,
+      };
+    });
+  };
+
   // set the dimensions and margins of the graph
   const margin = { top: 40, right: 30, bottom: 70, left: 60 },
-    width = 500 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom;
+    width = 800 - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom;
 
-  const data: Data[] = appleData.map((data): Data => {
-    return {
-      date: d3.timeParse("%Y-%m-%d")(data.date)!,
-      ratio: +data.ratio,
-    };
-  });
+  const formattedAppleData = formatData(appleData);
+  const formattedGoogleData = formatData(googleData);
+  const formattedMicrosoftData = formatData(microsoftData);
+  // Used to calculate domain ranges
+  const formattedAllData = [
+    ...formattedAppleData,
+    ...formattedGoogleData,
+    ...formattedMicrosoftData,
+  ];
 
   const x = d3
     .scaleTime()
     .range([margin.left, width - margin.right])
-    .domain(d3.extent(data, (d) => new Date(d.date)) as [Date, Date])
+    .domain(
+      d3.extent(formattedAllData, (d) => new Date(d.date)) as [Date, Date]
+    )
     .nice();
 
   const y = d3
     .scaleLinear()
     .range([height - margin.bottom, margin.top])
-    .domain([0, d3.max(data, (d) => d.ratio) as number])
+    .domain([0, d3.max(formattedAllData, (d) => d.ratio) as number])
     .nice();
 
   useEffect(() => {
@@ -55,35 +69,32 @@ const PEGraph = () => {
     }
   }, [gy, y]);
 
-  const line = d3
-    .line<Data>()
-    .x((d) => x(d.date))
-    .y((d) => y(d.ratio));
-
   return (
-    <svg width={width} height={height}>
+    <svg width={width} height={height} className={styles.bg}>
       <g ref={gx} transform={`translate(0,${height - margin.bottom})`} />
       <g ref={gy} transform={`translate(${margin.left},0)`} />
-      <path
-        d={line(data) || undefined}
-        fill="none"
-        stroke="steelblue"
-        strokeWidth="1.5"
+      <PELine
+        data={formattedGoogleData}
+        color="red"
+        label="Google"
+        x={x}
+        y={y}
       />
-      <text
-        x={width - margin.right}
-        y={y(data[data.length - 1].ratio)}
-        dy="-5.5em"
-        textAnchor="end"
-        fill="steelblue"
-      >
-        Apple
-      </text>
-      <g fill="white" stroke="currentColor" strokeWidth="1.5">
-        {data.map((d, i) => (
-          <circle key={i} cx={x(d.date)} cy={y(d.ratio)} r="2.5" />
-        ))}
-      </g>
+      <PELine
+        data={formattedAppleData}
+        color="steelblue"
+        label="Apple"
+        x={x}
+        y={y}
+      />
+      <PELine
+        data={formattedMicrosoftData}
+        color="green"
+        label="Microsoft"
+        x={x}
+        y={y}
+        dy={10}
+      />
     </svg>
   );
 };

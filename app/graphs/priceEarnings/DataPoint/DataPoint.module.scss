@@ -1,0 +1,15 @@
+.dataPoint {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  fill: #2c2c2c;
+  stroke-width: 2px;
+  // stroke: white;
+  transition: r 0.1s ease-in-out;
+  r: 5px;
+  cursor: pointer;
+
+  &:hover {
+    r: 10px;
+  }
+}
