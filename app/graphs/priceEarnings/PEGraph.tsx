@@ -10,6 +10,7 @@ export interface Data {
   ratio: number;
 }
 
+export type HoverOptions = "Apple" | "Google" | "Microsoft" | "";
 // TODO:
 // - add labels
 // - caption + heading
@@ -18,6 +19,9 @@ export interface Data {
 const PEGraph = () => {
   const gx = useRef(null);
   const gy = useRef(null);
+  const [hovered, setHovered] = React.useState<HoverOptions>("");
+
+  const handleHover = (company: HoverOptions) => () => setHovered(company);
 
   const formatData = (data: PEData): Data[] => {
     return data.map((d): Data => {
@@ -72,13 +76,25 @@ const PEGraph = () => {
   return (
     <svg width={width} height={height} className={styles.bg}>
       <g ref={gx} transform={`translate(0,${height - margin.bottom})`} />
-      <g ref={gy} transform={`translate(${margin.left},0)`} />
+
+      <g transform={`translate(0,${height - margin.bottom})`}>
+        <text className={styles.label} x={width / 2} y={50}>
+          Date
+        </text>
+      </g>
+      <g ref={gy} transform={`translate(${margin.left},0)`}>
+        <text className={styles.label} x={-200} y={-40} transform="rotate(-90)">
+          PE Ratio
+        </text>
+      </g>
       <PELine
         data={formattedGoogleData}
         color="red"
         label="Google"
         x={x}
         y={y}
+        hovered={hovered}
+        handleHover={handleHover}
       />
       <PELine
         data={formattedAppleData}
@@ -86,6 +102,8 @@ const PEGraph = () => {
         label="Apple"
         x={x}
         y={y}
+        hovered={hovered}
+        handleHover={handleHover}
       />
       <PELine
         data={formattedMicrosoftData}
@@ -94,6 +112,8 @@ const PEGraph = () => {
         x={x}
         y={y}
         dy={10}
+        hovered={hovered}
+        handleHover={handleHover}
       />
     </svg>
   );

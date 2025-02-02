@@ -1,4 +1,8 @@
 .wrapper {
   padding: 40px;
   width: calc(100% - 80px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
 }
