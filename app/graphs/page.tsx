@@ -24,6 +24,11 @@ export default async function GraphSelection() {
           caption="Price to earnings ratio of tech companies for the last 15 years"
           name="priceEarnings"
         />
+        <GraphPreview
+          title="Tech P/E Bar Chart"
+          caption="Price to earnings ratio of tech companies for the last 15 years"
+          name="priceEarningsBar"
+        />
       </Grid>
     </div>
   );

@@ -9,9 +9,10 @@ npm run dev
 
 ## About the app
 
-Small demo app of an interactive price to earnings graph built with d3js
+Small demo app of interactive price to earnings graphs built with d3js and Next Js
 
 ![Price to earnings graph](public/images/priceEarnings.png)
+![Price to earnings bar chart](public/images/priceEarningsBar.png)
 
 ## Stack used
 

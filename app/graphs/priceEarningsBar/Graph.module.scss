@@ -1,0 +1,22 @@
+.bg {
+  background: linear-gradient(135deg, #2c2c2c, #1a1a1a);
+  padding: 20px;
+  padding-right: 60px;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.wrapper {
+  padding: 40px;
+  width: calc(100% - 80px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.label {
+  font-size: 16px;
+  fill: white;
+}

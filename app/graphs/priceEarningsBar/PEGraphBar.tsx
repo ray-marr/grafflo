@@ -1,9 +1,8 @@
 "use client";
-import React, { createContext, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import { appleData, googleData, microsoftData, PEData } from "./data";
 import styles from "./Graph.module.scss";
-import PELine from "./PELine";
 import { useWindowDimensions } from "@/app/_utils/reactHooks";
 
 export interface Data {
@@ -11,43 +10,36 @@ export interface Data {
   ratio: number;
 }
 
-export type CompanyOptions = "Apple" | "Google" | "Microsoft" | "";
+export type CompanyOptions = "Apple" | "Google" | "Microsoft";
 
-export type GraphContextType = {
-  graphHeight: number;
-  graphWidth: number;
-  margins: { top: number; right: number; bottom: number; left: number };
-  x: d3.ScaleTime<number, number, never>;
-  y: d3.ScaleLinear<number, number, never>;
-  hoveredCompany: CompanyOptions;
-  handleCompanyHover: (company: CompanyOptions) => () => void;
-};
-
-export const GraphContext = createContext<GraphContextType | undefined>(
-  undefined
-);
+type GroupedData = {
+  year: number;
+  data: {
+    Apple: Data;
+    Google: Data;
+    Microsoft: Data;
+  };
+  startPosition: number;
+}[];
 
 const GRAPH_MAX_WIDTH = 800;
 const MEDIUM_SCREEN_BREAKPOINT = 600;
 
-const PEGraph = () => {
+const PEGraphBar = () => {
   const xAxisRef = useRef(null);
   const yAxisRef = useRef(null);
   const { width } = useWindowDimensions();
-  const [hoveredCompany, setHoveredCompany] =
-    React.useState<CompanyOptions>("");
   const isMediumScreen = width < MEDIUM_SCREEN_BREAKPOINT;
 
-  const handleCompanyHover = (company: CompanyOptions) => () =>
-    setHoveredCompany(company);
-
   const formatData = (data: PEData): Data[] => {
-    return data.map((d): Data => {
-      return {
-        date: d3.timeParse("%Y-%m-%d")(d.date)!,
-        ratio: +d.ratio,
-      };
-    });
+    return data
+      .map((d): Data => {
+        return {
+          date: d3.timeParse("%Y-%m-%d")(d.date)!,
+          ratio: +d.ratio,
+        };
+      })
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
   };
 
   // set the dimensions and margins of the graph
@@ -81,6 +73,22 @@ const PEGraph = () => {
     .domain([0, d3.max(allData, (d) => d.ratio) as number])
     .nice();
 
+  const barWidth = isMediumScreen ? 4 : 7;
+  // Group by year - assumes each companies data is in the same order
+  const groupedData: GroupedData = formattedAppleData.map((apple, index) => {
+    const startPosition = x(apple.date.setMonth(apple.date.getMonth() - 5)); // align centre of group to year
+
+    return {
+      year: apple.date.getFullYear(),
+      data: {
+        Apple: apple,
+        Google: formattedGoogleData[index],
+        Microsoft: formattedMicrosoftData[index],
+      },
+      startPosition,
+    };
+  });
+
   useEffect(() => {
     if (xAxisRef.current) {
       d3.select<SVGGElement, unknown>(xAxisRef.current).call(d3.axisBottom(x));
@@ -95,6 +103,31 @@ const PEGraph = () => {
 
   return (
     <svg width={graphWidth} height={graphHeight} className={styles.bg}>
+      {groupedData.map((group, i) => (
+        <g
+          key={i}
+          transform={`translate(${group.startPosition}, ${graphHeight})`}
+        >
+          {[
+            ["Apple", "red"] as [CompanyOptions, string],
+            ["Google", "steelblue"] as [CompanyOptions, string],
+            ["Microsoft", "green"] as [CompanyOptions, string],
+          ].map(([company, color], i) => (
+            <rect
+              key={i}
+              x={barWidth * i}
+              y={y(group.data[company].ratio) - graphHeight}
+              width={barWidth}
+              // y(ratio) gives distance from top of graph, so we needs to calculate the height of bar
+              height={
+                graphHeight - y(group.data[company].ratio) - margins.bottom
+              }
+              fill={color}
+              stroke="black"
+            />
+          ))}
+        </g>
+      ))}
       <g
         ref={xAxisRef}
         transform={`translate(0,${graphHeight - margins.bottom})`}
@@ -113,28 +146,8 @@ const PEGraph = () => {
           PE Ratio
         </text>
       </g>
-      <GraphContext.Provider
-        value={{
-          graphHeight,
-          graphWidth,
-          margins: margins,
-          x,
-          y,
-          hoveredCompany,
-          handleCompanyHover,
-        }}
-      >
-        <PELine data={formattedGoogleData} color="red" label="Google" />
-        <PELine data={formattedAppleData} color="steelblue" label="Apple" />
-        <PELine
-          data={formattedMicrosoftData}
-          color="green"
-          label="Microsoft"
-          dy={10}
-        />
-      </GraphContext.Provider>
     </svg>
   );
 };
 
-export default PEGraph;
+export default PEGraphBar;
