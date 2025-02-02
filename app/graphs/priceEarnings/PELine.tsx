@@ -1,28 +1,19 @@
 import * as d3 from "d3";
-import { Data, HoverOptions } from "./PEGraph";
+import { Data, GraphContext, CompanyOptions } from "./PEGraph";
 import DataPoint from "./DataPoint/DataPoint";
+import { useContext } from "react";
 
 interface PELineProps {
   data: Data[];
   color: string;
-  label: HoverOptions;
-  x: d3.ScaleTime<number, number, never>;
-  y: d3.ScaleLinear<number, number, never>;
+  label: CompanyOptions;
   dy?: number; //shift company label
-  hovered: HoverOptions;
-  handleHover: (company: HoverOptions) => () => void;
 }
 
-const PELine: React.FC<PELineProps> = ({
-  data,
-  color,
-  label,
-  x,
-  y,
-  dy = 0,
-  hovered,
-  handleHover,
-}) => {
+const PELine: React.FC<PELineProps> = ({ data, color, label, dy = 0 }) => {
+  const context = useContext(GraphContext);
+
+  const { x, y, graphWidth, hoveredCompany, handleCompanyHover } = context!;
   const line = d3
     .line<Data>()
     .x((d) => x(d.date))
@@ -31,9 +22,9 @@ const PELine: React.FC<PELineProps> = ({
 
   return (
     <g
-      onMouseEnter={handleHover(label)}
-      onMouseLeave={handleHover("")}
-      opacity={["", label].includes(hovered) ? 1 : 0.3}
+      onMouseEnter={handleCompanyHover(label)}
+      onMouseLeave={handleCompanyHover("")}
+      opacity={["", label].includes(hoveredCompany) ? 1 : 0.3}
     >
       <path
         d={line(data) || undefined}
@@ -42,7 +33,7 @@ const PELine: React.FC<PELineProps> = ({
         strokeWidth="2"
       />
       <text
-        x={710}
+        x={graphWidth}
         y={y(data[0].ratio)}
         dy={dy}
         textAnchor="end"

@@ -1,23 +1,45 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { createContext, useEffect, useRef } from "react";
 import * as d3 from "d3";
 import { appleData, googleData, microsoftData, PEData } from "./data";
 import styles from "./Graph.module.scss";
 import PELine from "./PELine";
+import { useWindowDimensions } from "@/app/_utils/reactHooks";
 
 export interface Data {
   date: Date;
   ratio: number;
 }
 
-export type HoverOptions = "Apple" | "Google" | "Microsoft" | "";
+export type CompanyOptions = "Apple" | "Google" | "Microsoft" | "";
+
+export type GraphContextType = {
+  graphHeight: number;
+  graphWidth: number;
+  margins: { top: number; right: number; bottom: number; left: number };
+  x: d3.ScaleTime<number, number, never>;
+  y: d3.ScaleLinear<number, number, never>;
+  hoveredCompany: CompanyOptions;
+  handleCompanyHover: (company: CompanyOptions) => () => void;
+};
+
+export const GraphContext = createContext<GraphContextType | undefined>(
+  undefined
+);
+
+const GRAPH_MAX_WIDTH = 800;
+const MEDIUM_SCREEN_BREAKPOINT = 600;
 
 const PEGraph = () => {
-  const gx = useRef(null);
-  const gy = useRef(null);
-  const [hovered, setHovered] = React.useState<HoverOptions>("");
+  const xAxisRef = useRef(null);
+  const yAxisRef = useRef(null);
+  const { width } = useWindowDimensions();
+  const [hoveredCompany, setHoveredCompany] =
+    React.useState<CompanyOptions>("");
+  const isMediumScreen = width < MEDIUM_SCREEN_BREAKPOINT;
 
-  const handleHover = (company: HoverOptions) => () => setHovered(company);
+  const handleCompanyHover = (company: CompanyOptions) => () =>
+    setHoveredCompany(company);
 
   const formatData = (data: PEData): Data[] => {
     return data.map((d): Data => {
@@ -29,15 +51,19 @@ const PEGraph = () => {
   };
 
   // set the dimensions and margins of the graph
-  const margin = { top: 40, right: 30, bottom: 70, left: 60 },
-    width = 800 - margin.left - margin.right,
-    height = 600 - margin.top - margin.bottom;
+  const margins = isMediumScreen
+    ? { top: 10, right: 0, bottom: 60, left: 60 }
+    : { top: 40, right: 60, bottom: 70, left: 60 };
+
+  const graphWidth =
+    Math.min(width, GRAPH_MAX_WIDTH) - margins.left - margins.right;
+  const graphHeight = (graphWidth * 6) / 8 - margins.top - margins.bottom;
 
   const formattedAppleData = formatData(appleData);
   const formattedGoogleData = formatData(googleData);
   const formattedMicrosoftData = formatData(microsoftData);
   // Used to calculate domain ranges
-  const formattedAllData = [
+  const allData = [
     ...formattedAppleData,
     ...formattedGoogleData,
     ...formattedMicrosoftData,
@@ -45,72 +71,70 @@ const PEGraph = () => {
 
   const x = d3
     .scaleTime()
-    .range([margin.left, width - margin.right])
-    .domain(
-      d3.extent(formattedAllData, (d) => new Date(d.date)) as [Date, Date]
-    )
+    .range([margins.left, graphWidth - margins.right])
+    .domain(d3.extent(allData, (d) => new Date(d.date)) as [Date, Date])
     .nice();
 
   const y = d3
     .scaleLinear()
-    .range([height - margin.bottom, margin.top])
-    .domain([0, d3.max(formattedAllData, (d) => d.ratio) as number])
+    .range([graphHeight - margins.bottom, margins.top])
+    .domain([0, d3.max(allData, (d) => d.ratio) as number])
     .nice();
 
   useEffect(() => {
-    if (gx.current) {
-      d3.select<SVGGElement, unknown>(gx.current).call(d3.axisBottom(x));
+    if (xAxisRef.current) {
+      d3.select<SVGGElement, unknown>(xAxisRef.current).call(d3.axisBottom(x));
     }
-  }, [gx, x]);
+  }, [xAxisRef, x]);
 
   useEffect(() => {
-    if (gy.current) {
-      d3.select<SVGGElement, unknown>(gy.current).call(d3.axisLeft(y));
+    if (yAxisRef.current) {
+      d3.select<SVGGElement, unknown>(yAxisRef.current).call(d3.axisLeft(y));
     }
-  }, [gy, y]);
+  }, [yAxisRef, y]);
 
   return (
-    <svg width={width} height={height} className={styles.bg}>
-      <g ref={gx} transform={`translate(0,${height - margin.bottom})`} />
+    <svg width={graphWidth} height={graphHeight} className={styles.bg}>
+      <g
+        ref={xAxisRef}
+        transform={`translate(0,${graphHeight - margins.bottom})`}
+      />
 
-      <g transform={`translate(0,${height - margin.bottom})`}>
-        <text className={styles.label} x={width / 2} y={50}>
+      <g transform={`translate(0,${graphHeight - margins.bottom})`}>
+        <text className={styles.label} x={graphWidth / 2} y={50}>
           Date
         </text>
       </g>
-      <g ref={gy} transform={`translate(${margin.left},0)`}>
-        <text className={styles.label} x={-200} y={-40} transform="rotate(-90)">
+      <g ref={yAxisRef} transform={`translate(${margins.left},0)`}>
+        <text
+          className={styles.label}
+          x={-graphHeight / 2 + 50}
+          y={-40}
+          transform="rotate(-90)"
+        >
           PE Ratio
         </text>
       </g>
-      <PELine
-        data={formattedGoogleData}
-        color="red"
-        label="Google"
-        x={x}
-        y={y}
-        hovered={hovered}
-        handleHover={handleHover}
-      />
-      <PELine
-        data={formattedAppleData}
-        color="steelblue"
-        label="Apple"
-        x={x}
-        y={y}
-        hovered={hovered}
-        handleHover={handleHover}
-      />
-      <PELine
-        data={formattedMicrosoftData}
-        color="green"
-        label="Microsoft"
-        x={x}
-        y={y}
-        dy={10}
-        hovered={hovered}
-        handleHover={handleHover}
-      />
+      <GraphContext.Provider
+        value={{
+          graphHeight,
+          graphWidth,
+          margins: margins,
+          x,
+          y,
+          hoveredCompany,
+          handleCompanyHover,
+        }}
+      >
+        <PELine data={formattedGoogleData} color="red" label="Google" />
+        <PELine data={formattedAppleData} color="steelblue" label="Apple" />
+        <PELine
+          data={formattedMicrosoftData}
+          color="green"
+          label="Microsoft"
+          dy={10}
+        />
+      </GraphContext.Provider>
     </svg>
   );
 };
