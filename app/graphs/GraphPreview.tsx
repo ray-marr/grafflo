@@ -12,14 +12,16 @@ export default async function GraphPreview({ title, caption, name }: props) {
       <Typography sx={{ marginBottom: "8px" }} fontWeight="bold">
         {title}
       </Typography>
-      <Paper elevation={3} sx={{ width: "200px", height: "200px" }}>
+      <Paper elevation={3} sx={{ width: "400px", height: "300px" }}>
         <Grid2 container direction="column" spacing={2}>
           <Button href={`/graphs/${name}`}>
             <div
               style={{
-                backgroundImage: `url("images/${name}.jpg")`,
-                width: "100%",
-                height: "100px",
+                backgroundImage: `url("images/${name}.png")`,
+                width: "360px",
+                height: "210px",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
               }}
             />
           </Button>

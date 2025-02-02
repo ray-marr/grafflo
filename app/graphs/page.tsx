@@ -20,13 +20,8 @@ export default async function GraphSelection() {
 
       <Grid container spacing={4}>
         <GraphPreview
-          title="Demo graph"
-          caption="This demo graph shows a barchart"
-          name="demo"
-        />
-        <GraphPreview
           title="Tech P/E Ratio"
-          caption="Price/Earnings ratio of tech companies for the last 10 years"
+          caption="Price to earnings ratio of tech companies for the last 15 years"
           name="priceEarnings"
         />
       </Grid>
