@@ -20,18 +20,16 @@ const PELine: React.FC<PELineProps> = ({ data, color, label, dy = 0 }) => {
     .y((d) => y(d.ratio))
     .curve(d3.curveCatmullRom);
 
+  // fade other companies when one is hovered
+  const lineOpacity = ["", label].includes(hoveredCompany) ? 1 : 0.3;
+
   return (
     <g
       onMouseEnter={handleCompanyHover(label)}
       onMouseLeave={handleCompanyHover("")}
-      opacity={["", label].includes(hoveredCompany) ? 1 : 0.3}
+      opacity={lineOpacity}
     >
-      <path
-        d={line(data) || undefined}
-        fill="none"
-        stroke={color}
-        strokeWidth="2"
-      />
+      <path d={line(data)!} fill="none" stroke={color} strokeWidth="2" />
       <text
         x={graphWidth}
         y={y(data[0].ratio)}
