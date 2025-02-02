@@ -11,10 +11,6 @@ export interface Data {
 }
 
 export type HoverOptions = "Apple" | "Google" | "Microsoft" | "";
-// TODO:
-// - add labels
-// - caption + heading
-// - add more companies
 
 const PEGraph = () => {
   const gx = useRef(null);
