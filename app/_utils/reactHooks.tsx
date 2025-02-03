@@ -1,4 +1,12 @@
+"use client";
 import { useEffect, useState } from "react";
+
+function isMobileDevice() {
+  const userAgent = navigator.userAgent;
+  const isMobileUA = userAgent.match(/Mobile|iPhone|Android/i);
+
+  return isMobileUA;
+}
 
 export const useWindowDimensions = () => {
   const [windowWidth, setWindowWidth] = useState(800);
@@ -6,8 +14,9 @@ export const useWindowDimensions = () => {
 
   useEffect(() => {
     const updateDimensions = () => {
-      setWindowWidth(window.innerWidth);
-      setWindowHeight(window.innerHeight);
+      const isMobile = isMobileDevice();
+      setWindowWidth(isMobile ? window.screen.width : window.innerWidth);
+      setWindowHeight(isMobile ? window.screen.height : window.innerHeight);
     };
 
     updateDimensions();
@@ -22,4 +31,24 @@ export const useWindowDimensions = () => {
   }, []);
 
   return { width: windowWidth, height: windowHeight };
+};
+
+export const useLocation = () => {
+  const [location, setLocation] = useState<Location>({} as Location);
+
+  useEffect(() => {
+    const updateLocation = () => {
+      setLocation(window.location);
+    };
+
+    if (window?.location) updateLocation();
+
+    window.addEventListener("locationchange", updateLocation);
+
+    return () => {
+      window.removeEventListener("locationchange", updateLocation);
+    };
+  }, []);
+
+  return location;
 };

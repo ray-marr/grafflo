@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -13,6 +12,8 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import AutoGraph from "@mui/icons-material/AutoGraph";
 import { useRouter } from "next/navigation";
+import { useLocation } from "../_utils/reactHooks";
+import { useState } from "react";
 
 const pages = [
   { name: "HOME", href: "/" },
@@ -20,9 +21,8 @@ const pages = [
 ];
 
 function Header() {
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+  const location = useLocation();
   const router = useRouter();
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -119,13 +119,27 @@ function Header() {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
-              <Button
+              <Box
                 key={page.name}
-                sx={{ my: 2, color: "white", display: "block" }}
-                href={page.href}
+                sx={{
+                  borderBottom:
+                    location.pathname === page.href
+                      ? "4px solid #ffbd8f"
+                      : "none",
+                }}
               >
-                {page.name}
-              </Button>
+                <Button
+                  sx={{
+                    my: 2,
+                    color: "white",
+                    display: "block",
+                    height: "100%",
+                  }}
+                  href={page.href}
+                >
+                  {page.name}
+                </Button>
+              </Box>
             ))}
           </Box>
         </Toolbar>
