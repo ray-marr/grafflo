@@ -6,6 +6,7 @@ import Header from "./_components/Header";
 import "@/app/_styles/globals.scss";
 import Footer from "./_components/Footer";
 import { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: {
@@ -26,6 +27,7 @@ export default function RootLayout(props: PropsWithChildren) {
             <main>{children}</main>
           </AppRouterCacheProvider>
           <Footer />
+          <Analytics />
         </body>
       </ThemeProvider>
     </html>

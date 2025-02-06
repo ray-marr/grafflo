@@ -32,23 +32,3 @@ export const useWindowDimensions = () => {
 
   return { width: windowWidth, height: windowHeight };
 };
-
-export const useLocation = () => {
-  const [location, setLocation] = useState<Location>({} as Location);
-
-  useEffect(() => {
-    const updateLocation = () => {
-      setLocation(window.location);
-    };
-
-    if (window?.location) updateLocation();
-
-    window.addEventListener("locationchange", updateLocation);
-
-    return () => {
-      window.removeEventListener("locationchange", updateLocation);
-    };
-  }, []);
-
-  return location;
-};

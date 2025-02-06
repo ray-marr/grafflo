@@ -15,6 +15,16 @@ const theme = createTheme({
       main: "#3f51b5",
     },
   },
+  components: {
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: "#444",
+          textDecorationColor: "#444",
+        },
+      },
+    },
+  },
 });
 
 export default theme;

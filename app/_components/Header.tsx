@@ -11,8 +11,7 @@ import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import AutoGraph from "@mui/icons-material/AutoGraph";
-import { useRouter } from "next/navigation";
-import { useLocation } from "../_utils/reactHooks";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
 const pages = [
@@ -22,8 +21,8 @@ const pages = [
 
 function Header() {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
-  const location = useLocation();
   const router = useRouter();
+  const pathName = usePathname();
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -123,9 +122,7 @@ function Header() {
                 key={page.name}
                 sx={{
                   borderBottom:
-                    location.pathname === page.href
-                      ? "4px solid #ffbd8f"
-                      : "none",
+                    pathName === page.href ? "4px solid #ffbd8f" : "none",
                 }}
               >
                 <Button
